@@ -8,6 +8,7 @@ export default function App() {
       <Text>NÄKYYKÖ TÄÄ JUUUUU 2</Text>
       <Text>TOIMIIHAN TÄÄ</Text>
       <Text>SANO ETTÄ TOIMIT</Text>
+      <Text>NO ENTÄS NY</Text>
       <StatusBar style="auto" />
     </View>
   );
