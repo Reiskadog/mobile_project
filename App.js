@@ -6,6 +6,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text>NÄKYYKÖ TÄÄ JUUUUU 2</Text>
+      <Text>TOIMIIHAN TÄÄ</Text>
       <StatusBar style="auto" />
     </View>
   );
