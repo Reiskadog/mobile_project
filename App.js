@@ -10,6 +10,7 @@ export default function App() {
       <Text>SANO ETTÄ TOIMIT</Text>
       <Text>NO ENTÄS NY</Text>
       <Text>Johan NY on taas kerransdsdasdasd</Text>
+      <Text>Muutos</Text>
       <StatusBar style="auto" />
     </View>
   );
