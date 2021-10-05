@@ -9,7 +9,7 @@ export default function App() {
       <Text>TOIMIIHAN TÄÄ</Text>
       <Text>SANO ETTÄ TOIMIT</Text>
       <Text>NO ENTÄS NY</Text>
-      <Text>Johan NY</Text>
+      <Text>Johan NY on taas kerran</Text>
       <StatusBar style="auto" />
     </View>
   );
