@@ -11,6 +11,7 @@ export default function App() {
       <Text>NO ENTÄS NY</Text>
       <Text>Johan NY on taas kerransdsdasdasd</Text>
       <Text>Muutos</Text>
+      <Text>Viimeinen testi</Text>
       <StatusBar style="auto" />
     </View>
   );
