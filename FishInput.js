@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 
 const FishInput=(props)=>{
     const [hasError, setErrors] = useState(false);
-    //const [fishList, setFishList] = useState([]);
     const [isLoading, setLoading]=useState(true);
     const [newFish, setFish]=useState('');
     
@@ -17,7 +16,7 @@ const FishInput=(props)=>{
         setFish('');
     }
 
-    async function addData(fisu) {
+async function addData(fisu) {
         const response = await fetch("http://10.0.2.2:8080/rest/fishservice/addjsonfish",
         {
           method:'POST',
@@ -26,19 +25,16 @@ const FishInput=(props)=>{
           },
           body:JSON.stringify({breed:fisu, weight:1003})
         });
-    
         const responseData = await response.json();
         console.log(responseData);
         //setFishList(fishList=>[...fishList, responseData]);
-      }
-    
+}
       useEffect(() => {
         if (isLoading==true){
           setLoading(false);
           addData();
         }
       });
-    
       if (isLoading==true) {
         return (
           <View style={{flex: 1, padding: 20, justifyContent:'center'}}>
@@ -46,7 +42,6 @@ const FishInput=(props)=>{
           </View>
         );
       } 
-
     return (
         <View style={styles.formStyle}>
             <TextInput placeholder="Fish's name" 

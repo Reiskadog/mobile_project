@@ -1,7 +1,7 @@
 // In App.js in a new project
 
 import React, { useState, useEffect } from "react";
-import { Button, View, Text,StyleSheet,FlatList } from 'react-native';
+import { Button, View, Text,StyleSheet,FlatList,TextInput,Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -26,31 +26,63 @@ function App() {
       <Stack.Navigator>
         <Stack.Screen name="UserScreen" component={UserScreen} />
         <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
+        <Stack.Screen name="AddSomething" component={AddSomething} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-function CategoryScreen({ navigation }) {
+function AddSomething({navigation}){
+  const [hasError, setErrors] = useState(false);
+  const [isLoading, setLoading]=useState(true);
+  const [newFish, setFish]=useState('');
 
+  const fishInputHandler=(enteredText)=>{
+    setFish(enteredText);
+}
+
+const addFish=()=>{
+  //addData(newFish);
+  Alert.alert("Lisäsit kalan: " + newFish);
+  setFish('');
+}
+
+return(
+  <View style={styles.formStyle}>
+            <TextInput placeholder="Fish's name" 
+                style={styles.inputStyle} 
+                onChangeText={fishInputHandler}/>   
+            <View style={styles.buttonView}>
+                <View style={styles.button}>
+                <Button title='Cancel add fish' color='red' onPress={()=>{navigation.navigate("CategoryScreen")}}/>
+                </View>
+                <View style={styles.button}>
+                <Button color='green' title="Add" onPress={addFish}/>
+                </View>
+            </View>
+        </View>
+);
+}
+
+function CategoryScreen({ navigation }) {
   fetchData();
   console.log("setit "+dataPosting);
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{marginTop:50}}>
-      <View style={styles.screen}>
-        <FlatList
+      <View style={{marginTop:10}}>
+        <View style={styles.screen}>
+          <FlatList
             keyExtractor={(item) => item.id.toString()}
             data={dataPosting}
             renderItem={({item}) => (
             <View style={styles.listItem}>
               <Text>{item.id}) {item.breed}, {item.weight}</Text>
             </View>
-          )}
-        />
+            )}
+          />
+        <Button title="Go to Home" onPress={() => navigation.navigate('AddSomething')} />
+        </View>
       </View>
-    </View>
-      <Button title="Go to Home" onPress={() => navigation.navigate('UserScreen')} />
     </View>
   );
 }
@@ -86,7 +118,28 @@ dataPosting = movies;
 }
 const styles = StyleSheet.create ({
   screen: {
-    padding: 60,
+    padding: 10,
+    },
+    inputStyle: {
+      borderWidth: 2, 
+      borderColor: 'red', 
+      padding: 10,
+      width:'80%',
+      marginBottom:10,
+    },
+    buttonView:{
+      width:'60%',
+      flexDirection: 'row',
+      justifyContent:"space-around",
+    },
+    button:{
+      width:'40%',
+    },
+    formStyle: {
+      flex:1,
+      flexDirection: 'column',
+      justifyContent:'center',
+      alignItems:"center"
   },
 });
 
