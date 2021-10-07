@@ -1,5 +1,3 @@
-// In App.js in a new project
-
 import React, { useState, useEffect } from "react";
 import { Button, View, Text,StyleSheet,FlatList,TextInput,Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -7,18 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 let dataPosting = "";
 
-function UserScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>User Screen</Text>
-      <Button
-        title="Go to category"
-        onPress={() => navigation.navigate(CategoryScreen)}
-      />
-    </View>
-  );
-}
-
+//Setup the navigation (Propably will be modified to include other files later)
 const Stack = createNativeStackNavigator();
 function App() {
   return (
@@ -32,38 +19,20 @@ function App() {
   );
 }
 
-function AddSomething({navigation}){
-  const [hasError, setErrors] = useState(false);
-  const [isLoading, setLoading]=useState(true);
-  const [newFish, setFish]=useState('');
-
-  const fishInputHandler=(enteredText)=>{
-    setFish(enteredText);
+//User screen part
+function UserScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>User Screen</Text>
+      <Button
+        title="Go to category"
+        onPress={() => navigation.navigate(CategoryScreen)}
+      />
+    </View>
+  );
 }
 
-const addFish=()=>{
-  //addData(newFish);
-  Alert.alert("Lisäsit kalan: " + newFish);
-  setFish('');
-}
-
-return(
-  <View style={styles.formStyle}>
-            <TextInput placeholder="Fish's name" 
-                style={styles.inputStyle} 
-                onChangeText={fishInputHandler}/>   
-            <View style={styles.buttonView}>
-                <View style={styles.button}>
-                <Button title='Cancel add fish' color='red' onPress={()=>{navigation.navigate("CategoryScreen")}}/>
-                </View>
-                <View style={styles.button}>
-                <Button color='green' title="Add" onPress={addFish}/>
-                </View>
-            </View>
-        </View>
-);
-}
-
+//Category screen part
 function CategoryScreen({ navigation }) {
   fetchData();
   console.log("setit "+dataPosting);
@@ -87,7 +56,7 @@ function CategoryScreen({ navigation }) {
   );
 }
 
-//And the third version with longer code and normal single function calls.
+//Fetch data for category
 async function fetchData() {
   const [hasError, setErrors] = useState(false);
   const [someError, setSomeErrors] = useState('');
@@ -116,6 +85,56 @@ async function fetchData() {
   }
 dataPosting = movies;
 }
+
+//Add something part
+function AddSomething({navigation}){
+  const [hasError, setErrors] = useState(false);
+  const [isLoading, setLoading]=useState(true);
+  const [newFish, setFish]=useState('');
+
+  const fishInputHandler=(enteredText)=>{
+    setFish(enteredText);
+  }
+// Will be converted to more functional adding data module
+  const addFish=()=>{
+  addData(newFish);
+  Alert.alert("Lisäsit kalan: " + newFish);
+  setFish('');
+  }
+
+return(
+  <View style={styles.formStyle}>
+            <TextInput placeholder="Fish's name" 
+                style={styles.inputStyle} 
+                onChangeText={fishInputHandler}/>   
+            <View style={styles.buttonView}>
+                <View style={styles.button}>
+                <Button title='Cancel add fish' color='red' onPress={()=>{navigation.navigate("CategoryScreen")}}/>
+                </View>
+                <View style={styles.button}>
+                <Button color='green' title="Add" onPress={addFish}/>
+                </View>
+            </View>
+        </View>
+);
+}
+
+//Adddata part to be convert to more functional form
+async function addData(fisu) {
+  const response = await fetch("http://10.0.2.2:8080/rest/fishservice/addjsonfish",
+  {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json'
+    },
+    body:JSON.stringify({breed:fisu, weight:1003})
+  });
+  const responseData = await response.json();
+  console.log(responseData);
+  //setFishList(fishList=>[...fishList, responseData]);
+}
+
+//Styles
 const styles = StyleSheet.create ({
   screen: {
     padding: 10,
