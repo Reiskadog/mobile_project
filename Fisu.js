@@ -80,7 +80,7 @@ const Fisu = (props) =>{
       </View>
     );
   }
-    return (
+  return (
       <View style={{marginTop:50}}>
       <Text>{hasError}</Text>
       <View style={styles.screen}>
