@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Button, View, Text,StyleSheet,FlatList,TextInput,Alert } from 'react-native';
+import { Button, View, Text,StyleSheet,FlatList,TextInput,Alert,TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 let dataPosting = "";
-
+let PressTest = "";
 //Setup the navigation (Propably will be modified to include other files later)
 const Stack = createNativeStackNavigator();
+
 function App() {
   return (
     <NavigationContainer>
@@ -34,8 +35,11 @@ function UserScreen({ navigation }) {
 
 //Category screen part
 function CategoryScreen({ navigation }) {
+  const [lPress, longPress] = useState(null);
+  //PressTest = lPress;
   fetchData();
-  console.log("setit "+dataPosting);
+  console.log(lPress);
+  //console.log("setit "+dataPosting);
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{marginTop:10}}>
@@ -44,9 +48,11 @@ function CategoryScreen({ navigation }) {
             keyExtractor={(item) => item.id.toString()}
             data={dataPosting}
             renderItem={({item}) => (
+              <TouchableOpacity activeOpacity={0.8} onPress={() => longPress(item.id)}>
             <View style={styles.listItem}>
-              <Text>{item.id}) {item.breed}, {item.weight}</Text>
+              <Text>{item.id}) {item.category}</Text>
             </View>
+            </TouchableOpacity>
             )}
           />
         <Button title="Go to Home" onPress={() => navigation.navigate('AddSomething')} />
@@ -67,7 +73,7 @@ async function fetchData() {
   let res = null;
   try{
     //This will wait the fetch to be done - it is also timeout which might be a response (server timeouts)
-    res=await fetch("http://10.0.2.2:8080/rest/fishservice/getAll");
+    res=await fetch("http://10.0.2.2:8080/rest/categoryservice/getAll");
   }
   catch(error){
     setErrors(true);
@@ -101,7 +107,6 @@ function AddSomething({navigation}){
   Alert.alert("Lisäsit kalan: " + newFish);
   setFish('');
   }
-
 return(
   <View style={styles.formStyle}>
             <TextInput placeholder="Fish's name" 
