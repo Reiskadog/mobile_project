@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 let dataPosting = "";
+let commentPosting = "";
 let PressTest = "";
 //Setup the navigation (Propably will be modified to include other files later)
 const Stack = createNativeStackNavigator();
@@ -15,6 +16,7 @@ function App() {
         <Stack.Screen name="UserScreen" component={UserScreen} />
         <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
         <Stack.Screen name="AddSomething" component={AddSomething} />
+        <Stack.Screen name="DisplayComment" component={DisplayComment} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -35,10 +37,10 @@ function UserScreen({ navigation }) {
 
 //Category screen part
 function CategoryScreen({ navigation }) {
-  const [lPress, longPress] = useState(null);
+  //const [lPress, longPress] = useState(null);
   //PressTest = lPress;
   fetchData();
-  console.log(lPress);
+  //console.log(lPress);
   //console.log("setit "+dataPosting);
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -48,19 +50,61 @@ function CategoryScreen({ navigation }) {
             keyExtractor={(item) => item.id.toString()}
             data={dataPosting}
             renderItem={({item}) => (
-              <TouchableOpacity activeOpacity={0.8} onPress={() => longPress(item.id)}>
+              <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DisplayComment', {
+                otherParam: item.id,
+              })}>
             <View style={styles.listItem}>
               <Text>{item.id}) {item.category}</Text>
             </View>
             </TouchableOpacity>
             )}
           />
-        <Button title="Go to Home" onPress={() => navigation.navigate('AddSomething')} />
-        </View>
+      <Button
+        title="Go to Details"
+        onPress={() => {
+          /* 1. Navigate to the Details route with params */
+          navigation.navigate('UserScreen', {
+            otherParam: 'anything you want here',
+          });
+        }}
+      />
+      </View>
       </View>
     </View>
   );
 }
+
+//User screen part
+function DisplayComment({ route ,navigation }) {
+// Make function call with category id, which we get from route.param.
+  const { otherParam } = route.params;
+
+  fetchCommentData(otherParam);
+
+  //Alert.alert("Annoit arvoksi " + itemId);
+  return (
+<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{marginTop:10}}>
+        <View style={styles.screen}>
+          <FlatList
+            keyExtractor={(item) => item.id.toString()}
+            data={commentPosting}
+            renderItem={({item}) => (
+            <View style={styles.listItem}>
+              <Text>{item.id}) {item.message} {item.category_id} {item.user_id}</Text>
+            </View>
+            )}
+          />
+      <Button
+        title="Go to category"
+        onPress={() => navigation.navigate(UserScreen)}
+      />
+    </View>
+  </View>
+</View>  
+);
+}
+
 
 //Fetch data for category
 async function fetchData() {
@@ -91,6 +135,40 @@ async function fetchData() {
   }
 dataPosting = movies;
 }
+
+//Fetch data for category
+async function fetchCommentData(id) {
+  const [hasError, setErrors] = useState(false);
+  const [someError, setSomeErrors] = useState('');
+  const [isLoading, setLoading]=useState(true);
+  const [movies, setMovies] = useState([]);
+
+  //Variable res is used later, so it must be introduced before try block and so cannot be const.
+  let res = null;
+  let db_id = "http://10.0.2.2:8080/rest/categoryservice/getAllComments/" + id;
+  //Alert.alert(db_id);
+  try{
+    //This will wait the fetch to be done - it is also timeout which might be a response (server timeouts)
+    res=await fetch(db_id);
+  }
+  catch(error){
+    setErrors(true);
+  }
+  try{
+    //Getting json from the response
+    const responseData = await res.json();
+    console.log(responseData);//Just for checking.....
+    setMovies(responseData);
+  }
+  catch(err){
+    setErrors(true);
+    setSomeErrors("ERROR: "+hasError+ " my error "+err);
+    console.log(someError);
+  }
+commentPosting = movies;
+}
+
+
 
 //Add something part
 function AddSomething({navigation}){
