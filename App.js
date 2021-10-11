@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Button, View, Text,StyleSheet,FlatList,TextInput,Alert,TouchableOpacity } from 'react-native';
+import { Button, View, Text,StyleSheet,FlatList,TextInput,Alert,TouchableOpacity, Pressable } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { globalStyles } from './styles/global';
 
 let dataPosting = "";
 let commentPosting = "";
@@ -30,26 +31,33 @@ function refreshComment(){
 //User screen part
 function UserScreen({ navigation }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>User Screen</Text>
-      <Button
-        title="Go to category"
-        onPress={() => navigation.navigate(CategoryScreen)}
-      />
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <Text style={globalStyles.titleText}>Forum App</Text>
+        <Text style={globalStyles.titleText2}>by: The Old Boyz</Text>
+        <TextInput style={globalStyles.textInput} placeholder='username'></TextInput>
+        <Pressable style={globalStyles.button} onPress={() => navigation.navigate(CategoryScreen)}>
+          <Text style={globalStyles.buttonText}>Enter</Text>
+        </Pressable>
     </View>
   );
 } 
 
 //Category screen part
 function CategoryScreen({ navigation }) {
+  var displayUsername = 'Käyttäjätunnus';
   if(categoryUpdated)
   {
     fetchData();
   }
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{marginTop:10}}>
-        <View style={styles.screen}>
+    <View style={{ flex: 1}}>
+      <View style={{ flex: 1}}>
+        <View style={globalStyles.userStats}>
+          <Text style={globalStyles.userStatsText1}>{displayUsername}</Text>
+        </View>
+      </View>
+      <View style={globalStyles.categoryTitles}>
+        <View style={globalStyles.screen}>
           <FlatList
             keyExtractor={(item) => item.id.toString()}
             data={movies}
@@ -57,22 +65,22 @@ function CategoryScreen({ navigation }) {
               <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DisplayComment', {
                 otherParam: item.id,
               })}>
-            <View style={styles.listItem}>
-              <Text>{item.id}) {item.category}</Text>
+            <View style={globalStyles.categoryItem}>
+              <Text style={globalStyles.buttonText}>{item.category}</Text>
             </View>
             </TouchableOpacity>
             )}
           />
-      <Button
-        title="Go to Details"
-        onPress={() => {
-          /* 1. Navigate to the Details route with params */
+        </View>
+      </View>
+      <View style={{flex:1, alignItems:"center", justifyContent:"center"}}> 
+        <Pressable style={globalStyles.button} onPress={() => {
           navigation.navigate('UserScreen', {
             otherParam: 'anything you want here',
           });
-        }}
-      />
-      </View>
+        }}>
+          <Text style={globalStyles.buttonText}>Back to User-screen</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -92,24 +100,46 @@ function DisplayComment({ route ,navigation }) {
   }
   
 return (
-<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{marginTop:10}}>
-        <View style={styles.screen}>
-          <FlatList
-            keyExtractor={(item) => item.id.toString()}
-            data={moviess}
-            renderItem={({item}) => (
-            <View style={styles.listItem}>
-              <Text>{item.id}) {item.message} {item.category_id} {item.user_id} {item.username}</Text>
+<View style={{ flex: 1}}>
+    <View style={{flex: 8, padding:10}}>
+      <View>
+        <FlatList
+          keyExtractor={(item) => item.id.toString()}
+          data={moviess}
+          renderItem={({item}) => (
+            <View style={globalStyles.commentItem}>
+              <Text style={globalStyles.commentUsername}>{item.username}</Text>
+              <Text style={globalStyles.commentMessage}>{item.message}</Text>
             </View>
-            )}
-          />
-      <Button
-        title="Go to category"
-        onPress={() => navigation.navigate(UserScreen)}
-      />
+          )}
+        />
+      </View>
+      <View style={globalStyles.newMessage}>
+        <TextInput 
+          multiline={true}
+          numberOfLines={1}
+          placeholder='Your message here'
+        />
+      </View>
+      <View style={globalStyles.postMessage}>
+        <Pressable style={globalStyles.postMessageButton} onPress={() => {
+            navigation.navigate('CategoryScreen', {
+            otherParam: 'anything you want here',
+          });
+        }}>
+        <Text style={globalStyles.buttonText}>Post message</Text>
+        </Pressable>
+      </View>
     </View>
-  </View>
+      <View style={{flex:1, alignItems:"center", justifyContent:"center"}}> 
+        <Pressable style={globalStyles.button} onPress={() => {
+          navigation.navigate('CategoryScreen', {
+            otherParam: 'anything you want here',
+          });
+        }}>
+          <Text style={globalStyles.buttonText}>Back to Category-screen</Text>
+        </Pressable>
+      </View>
 </View>  
     );
 }
@@ -190,15 +220,15 @@ function AddSomething({navigation}){
   setFish('');
   }
 return(
-  <View style={styles.formStyle}>
+  <View style={globalStyles.formStyle}>
             <TextInput placeholder="Fish's name" 
-                style={styles.inputStyle} 
+                style={globalStyles.inputStyle} 
                 onChangeText={fishInputHandler}/>   
-            <View style={styles.buttonView}>
-                <View style={styles.button}>
+            <View style={globalStyles.buttonView}>
+                <View style={globalStyles.button}>
                 <Button title='Cancel add fish' color='red' onPress={()=>{navigation.navigate("CategoryScreen")}}/>
                 </View>
-                <View style={styles.button}>
+                <View style={globalStyles.button}>
                 <Button color='green' title="Add" onPress={addFish}/>
                 </View>
             </View>
@@ -231,33 +261,5 @@ return (
     </NavigationContainer>
   );
 };
-
-//Styles
-const styles = StyleSheet.create ({
-  screen: {
-    padding: 10,
-    },
-    inputStyle: {
-      borderWidth: 2, 
-      borderColor: 'red', 
-      padding: 10,
-      width:'80%',
-      marginBottom:10,
-    },
-    buttonView:{
-      width:'60%',
-      flexDirection: 'row',
-      justifyContent:"space-around",
-    },
-    button:{
-      width:'40%',
-    },
-    formStyle: {
-      flex:1,
-      flexDirection: 'column',
-      justifyContent:'center',
-      alignItems:"center"
-  },
-});
 
 export default App;
