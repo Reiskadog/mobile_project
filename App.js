@@ -6,24 +6,20 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 let dataPosting = "";
 let commentPosting = "";
 let PressTest = "";
+let categoryUpdated = true;
+let commentUpdated = true;
+let param = "";
+
 //Setup the navigation (Propably will be modified to include other files later)
 const Stack = createNativeStackNavigator();
 
-function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="UserScreen" component={UserScreen} />
-        <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
-        <Stack.Screen name="AddSomething" component={AddSomething} />
-        <Stack.Screen name="DisplayComment" component={DisplayComment} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+const App = () =>{
 
 //User screen part
 function UserScreen({ navigation }) {
+  if(categoryUpdated){
+    fetchData();
+  }
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>User Screen</Text>
@@ -33,15 +29,10 @@ function UserScreen({ navigation }) {
       />
     </View>
   );
-}
+} 
 
 //Category screen part
 function CategoryScreen({ navigation }) {
-  //const [lPress, longPress] = useState(null);
-  //PressTest = lPress;
-  fetchData();
-  //console.log(lPress);
-  //console.log("setit "+dataPosting);
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{marginTop:10}}>
@@ -74,15 +65,43 @@ function CategoryScreen({ navigation }) {
   );
 }
 
-//User screen part
+/*
+function FetchMyData(){
+      if(param !=""){
+      fetchCommentData(param);
+      console.log(commentPosting);
+      }
+    };
+
+
+if(commentUpdated){
+    commentUpdated = false;
+    setInterval(FetchMyData, 1000);
+    }
+
+*/
+
+if(param != ""){
+  useEffect(() => {
+    fetchCommentData(param);
+  }, []);
+}
+
+
+
+//Display screen part
 function DisplayComment({ route ,navigation }) {
 // Make function call with category id, which we get from route.param.
   const { otherParam } = route.params;
-
-  fetchCommentData(otherParam);
-
-  //Alert.alert("Annoit arvoksi " + itemId);
-  return (
+  param = otherParam;
+  /*if(commentUpdated)
+  {
+    //setTimeout(fetchCommentData(otherParam),100);
+    fetchCommentData(otherParam);
+  }*/
+  console.log(commentPosting);
+  console.log(otherParam);
+return (
 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{marginTop:10}}>
         <View style={styles.screen}>
@@ -102,15 +121,14 @@ function DisplayComment({ route ,navigation }) {
     </View>
   </View>
 </View>  
-);
+    );
 }
-
 
 //Fetch data for category
 async function fetchData() {
   const [hasError, setErrors] = useState(false);
   const [someError, setSomeErrors] = useState('');
-  const [isLoading, setLoading]=useState(true);
+  //const [isLoading, setLoading]=useState(true);
   const [movies, setMovies] = useState([]);
 
   //Variable res is used later, so it must be introduced before try block and so cannot be const.
@@ -133,6 +151,7 @@ async function fetchData() {
     setSomeErrors("ERROR: "+hasError+ " my error "+err);
     console.log(someError);
   }
+categoryUpdated = false;
 dataPosting = movies;
 }
 
@@ -140,7 +159,6 @@ dataPosting = movies;
 async function fetchCommentData(id) {
   const [hasError, setErrors] = useState(false);
   const [someError, setSomeErrors] = useState('');
-  const [isLoading, setLoading]=useState(true);
   const [movies, setMovies] = useState([]);
 
   //Variable res is used later, so it must be introduced before try block and so cannot be const.
@@ -166,9 +184,8 @@ async function fetchCommentData(id) {
     console.log(someError);
   }
 commentPosting = movies;
+//commentUpdated = false;
 }
-
-
 
 //Add something part
 function AddSomething({navigation}){
@@ -216,6 +233,19 @@ async function addData(fisu) {
   console.log(responseData);
   //setFishList(fishList=>[...fishList, responseData]);
 }
+
+return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="UserScreen" component={UserScreen} />
+        <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
+        <Stack.Screen name="AddSomething" component={AddSomething} />
+        <Stack.Screen name="DisplayComment" component={DisplayComment} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
 
 //Styles
 const styles = StyleSheet.create ({
