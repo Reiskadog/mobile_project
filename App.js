@@ -9,17 +9,28 @@ let PressTest = "";
 let categoryUpdated = true;
 let commentUpdated = true;
 let param = "";
-
+let oldParam ="";
 //Setup the navigation (Propably will be modified to include other files later)
 const Stack = createNativeStackNavigator();
 
 const App = () =>{
+  const [moviess, setMoviess] = useState([]);
+  const [movies, setMovies] = useState([]);
+
+  setInterval(refreshComment, 1000);
+  //setInterval(refreshCategory, 1000);
+
+function refreshComment(){
+  commentUpdated = true;
+}
+/*function refreshCategory(){
+  categoryUpdated = true;
+}*/
+
+
 
 //User screen part
 function UserScreen({ navigation }) {
-  if(categoryUpdated){
-    fetchData();
-  }
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>User Screen</Text>
@@ -33,13 +44,17 @@ function UserScreen({ navigation }) {
 
 //Category screen part
 function CategoryScreen({ navigation }) {
+  if(categoryUpdated)
+  {
+    fetchData();
+  }
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{marginTop:10}}>
         <View style={styles.screen}>
           <FlatList
             keyExtractor={(item) => item.id.toString()}
-            data={dataPosting}
+            data={movies}
             renderItem={({item}) => (
               <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DisplayComment', {
                 otherParam: item.id,
@@ -65,49 +80,25 @@ function CategoryScreen({ navigation }) {
   );
 }
 
-/*
-function FetchMyData(){
-      if(param !=""){
-      fetchCommentData(param);
-      console.log(commentPosting);
-      }
-    };
-
-
-if(commentUpdated){
-    commentUpdated = false;
-    setInterval(FetchMyData, 1000);
-    }
-
-*/
-
-if(param != ""){
-  useEffect(() => {
-    fetchCommentData(param);
-  }, []);
-}
-
-
-
 //Display screen part
 function DisplayComment({ route ,navigation }) {
 // Make function call with category id, which we get from route.param.
-  const { otherParam } = route.params;
-  param = otherParam;
-  /*if(commentUpdated)
+  let { otherParam } = route.params;
+  param = moviess;
+
+  if(commentUpdated)
   {
-    //setTimeout(fetchCommentData(otherParam),100);
     fetchCommentData(otherParam);
-  }*/
-  console.log(commentPosting);
-  console.log(otherParam);
+  }
+  console.log("Tässä otherParam " + otherParam);
+  console.log("Tässä settiä "+param);
 return (
 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{marginTop:10}}>
         <View style={styles.screen}>
           <FlatList
             keyExtractor={(item) => item.id.toString()}
-            data={commentPosting}
+            data={moviess}
             renderItem={({item}) => (
             <View style={styles.listItem}>
               <Text>{item.id}) {item.message} {item.category_id} {item.user_id}</Text>
@@ -128,8 +119,6 @@ return (
 async function fetchData() {
   const [hasError, setErrors] = useState(false);
   const [someError, setSomeErrors] = useState('');
-  //const [isLoading, setLoading]=useState(true);
-  const [movies, setMovies] = useState([]);
 
   //Variable res is used later, so it must be introduced before try block and so cannot be const.
   let res = null;
@@ -159,7 +148,6 @@ dataPosting = movies;
 async function fetchCommentData(id) {
   const [hasError, setErrors] = useState(false);
   const [someError, setSomeErrors] = useState('');
-  const [movies, setMovies] = useState([]);
 
   //Variable res is used later, so it must be introduced before try block and so cannot be const.
   let res = null;
@@ -176,15 +164,15 @@ async function fetchCommentData(id) {
     //Getting json from the response
     const responseData = await res.json();
     console.log(responseData);//Just for checking.....
-    setMovies(responseData);
+    setMoviess(responseData);
   }
   catch(err){
     setErrors(true);
     setSomeErrors("ERROR: "+hasError+ " my error "+err);
     console.log(someError);
   }
-commentPosting = movies;
-//commentUpdated = false;
+commentUpdated = false;
+commentPosting = moviess;
 }
 
 //Add something part
