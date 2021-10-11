@@ -17,7 +17,7 @@ const App = () =>{
   const [moviess, setMoviess] = useState([]);
   const [movies, setMovies] = useState([]);
 
-  setInterval(refreshComment, 1000);
+  setInterval(refreshComment, 3000);
   //setInterval(refreshCategory, 1000);
 
 function refreshComment(){
@@ -26,8 +26,6 @@ function refreshComment(){
 /*function refreshCategory(){
   categoryUpdated = true;
 }*/
-
-
 
 //User screen part
 function UserScreen({ navigation }) {
@@ -89,9 +87,10 @@ function DisplayComment({ route ,navigation }) {
   if(commentUpdated)
   {
     fetchCommentData(otherParam);
+    console.log("Tässä otherParam " + otherParam);
+    console.log("Tässä settiä "+param);
   }
-  console.log("Tässä otherParam " + otherParam);
-  console.log("Tässä settiä "+param);
+  
 return (
 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{marginTop:10}}>
@@ -101,7 +100,7 @@ return (
             data={moviess}
             renderItem={({item}) => (
             <View style={styles.listItem}>
-              <Text>{item.id}) {item.message} {item.category_id} {item.user_id}</Text>
+              <Text>{item.id}) {item.message} {item.category_id} {item.user_id} {item.username}</Text>
             </View>
             )}
           />
@@ -221,7 +220,6 @@ async function addData(fisu) {
   console.log(responseData);
   //setFishList(fishList=>[...fishList, responseData]);
 }
-
 return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -233,7 +231,6 @@ return (
     </NavigationContainer>
   );
 };
-
 
 //Styles
 const styles = StyleSheet.create ({
