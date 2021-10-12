@@ -56,6 +56,32 @@ function UserScreen({ navigation }) {
 function CategoryScreen({ route,navigation }) {
   let { userParam } = route.params;
   var displayUsername = userParam;
+
+  setInterval(refreshUser, 1000);
+
+  function refreshUser(){
+    userAddUpdated = false;
+  }
+
+if(userAddUpdated){
+  //const [advice, setAdvice] = useState("");
+    useEffect(() => {
+        const url = "http://10.0.2.2:8080/rest/categoryservice/addjsonfish/"+userParam;
+        const fetchiData = async () => {
+            try {
+                const response = await fetch(url);
+                const json = await response.json();
+              // console.log(json.slip.advice);
+                //setAdvice(json.slip.advice);
+                //console.log("repondi " + json);
+            } catch (error) {
+                console.log("error", error);
+            }
+        };
+        fetchiData();
+    }, []);
+  }
+  
   
   if(categoryUpdated)
   {
@@ -76,7 +102,7 @@ function CategoryScreen({ route,navigation }) {
             renderItem={({item}) => (
               <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DisplayComment', {
                 otherParam: item.id,
-                userParam: displayUsername,
+                
               })}>
             <View style={globalStyles.categoryItem}>
               <Text style={globalStyles.buttonText}>{item.category}</Text>
@@ -102,9 +128,8 @@ function CategoryScreen({ route,navigation }) {
 //Display screen part
 function DisplayComment({ route ,navigation }) {
 // Make function call with category id, which we get from route.param.
-  let { otherParam,userParam } = route.params;
+  let { otherParam } = route.params;
   param = moviess;
-  let useri = userParam;
 
   if(commentUpdated)
   {
