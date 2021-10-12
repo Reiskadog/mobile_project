@@ -9,6 +9,8 @@ let commentPosting = "";
 let PressTest = "";
 let categoryUpdated = true;
 let commentUpdated = true;
+let userAddUpdated = true;
+
 let param = "";
 let oldParam ="";
 //Setup the navigation (Propably will be modified to include other files later)
@@ -17,6 +19,7 @@ const Stack = createNativeStackNavigator();
 const App = () =>{
   const [moviess, setMoviess] = useState([]);
   const [movies, setMovies] = useState([]);
+  const [moviesss, setMoviesss] = useState([]);
 
   setInterval(refreshComment, 3000);
   //setInterval(refreshCategory, 1000);
@@ -30,12 +33,19 @@ function refreshComment(){
 
 //User screen part
 function UserScreen({ navigation }) {
+  const [newUser, setUser]=useState('');
+  const userInputHandler=(enteredText)=>{
+    setUser(enteredText);
+  }
+
   return (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
         <Text style={globalStyles.titleText}>Forum App</Text>
         <Text style={globalStyles.titleText2}>by: The Old Boyz</Text>
-        <TextInput style={globalStyles.textInput} placeholder='username'></TextInput>
-        <Pressable style={globalStyles.button} onPress={() => navigation.navigate(CategoryScreen)}>
+        <TextInput style={globalStyles.textInput} placeholder='username' onChangeText={userInputHandler}></TextInput>
+        <Pressable style={globalStyles.button} onPress={() => navigation.navigate('CategoryScreen', {
+                userParam: newUser,
+              })}>
           <Text style={globalStyles.buttonText}>Enter</Text>
         </Pressable>
     </View>
@@ -43,8 +53,10 @@ function UserScreen({ navigation }) {
 } 
 
 //Category screen part
-function CategoryScreen({ navigation }) {
-  var displayUsername = 'Käyttäjätunnus';
+function CategoryScreen({ route,navigation }) {
+  let { userParam } = route.params;
+  var displayUsername = userParam;
+  
   if(categoryUpdated)
   {
     fetchData();
@@ -64,6 +76,7 @@ function CategoryScreen({ navigation }) {
             renderItem={({item}) => (
               <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DisplayComment', {
                 otherParam: item.id,
+                userParam: displayUsername,
               })}>
             <View style={globalStyles.categoryItem}>
               <Text style={globalStyles.buttonText}>{item.category}</Text>
@@ -89,8 +102,9 @@ function CategoryScreen({ navigation }) {
 //Display screen part
 function DisplayComment({ route ,navigation }) {
 // Make function call with category id, which we get from route.param.
-  let { otherParam } = route.params;
+  let { otherParam,userParam } = route.params;
   param = moviess;
+  let useri = userParam;
 
   if(commentUpdated)
   {
@@ -181,7 +195,6 @@ async function fetchCommentData(id) {
   //Variable res is used later, so it must be introduced before try block and so cannot be const.
   let res = null;
   let db_id = "http://10.0.2.2:8080/rest/categoryservice/getAllComments/" + id;
-  //Alert.alert(db_id);
   try{
     //This will wait the fetch to be done - it is also timeout which might be a response (server timeouts)
     res=await fetch(db_id);
@@ -208,6 +221,7 @@ commentPosting = moviess;
 function AddSomething({navigation}){
   const [hasError, setErrors] = useState(false);
   const [isLoading, setLoading]=useState(true);
+
   const [newFish, setFish]=useState('');
 
   const fishInputHandler=(enteredText)=>{
@@ -215,10 +229,11 @@ function AddSomething({navigation}){
   }
 // Will be converted to more functional adding data module
   const addFish=()=>{
-  addData(newFish);
-  Alert.alert("Lisäsit kalan: " + newFish);
-  setFish('');
+  let asd = addData(newFish)
+  //Alert.alert("Lisäsit kalan: " + newFish);
+  //setFish('');
   }
+  
 return(
   <View style={globalStyles.formStyle}>
             <TextInput placeholder="Fish's name" 
@@ -238,20 +253,35 @@ return(
 
 //Adddata part to be convert to more functional form
 async function addData(fisu) {
-  let user = "http://10.0.2.2:8080/rest/fishservice/addjsonfish/" + fisu;
+  const [hasError, setErrors] = useState(false);
+  const [someError, setSomeErrors] = useState('');
 
-  const response = await fetch(user,
-  {
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json'
-    },
-    body:JSON.stringify({username:fisu})
-  });
-  const responseData = await response.json();
-  console.log(responseData);
+  let res = null;
+  let user = "http://10.0.2.2:8080/rest/categoryservice/addjsonfish/" + fisu;
+
+  try{
+    //This will wait the fetch to be done - it is also timeout which might be a response (server timeouts)
+    res=await fetch(user);
+  }
+  catch(error){
+    setErrors(true);
+  }
+  try{
+    //Getting json from the response
+    const responseData = await res.json();
+    console.log(responseData);//Just for checking.....
+    //setMoviesss(responseData);
+    //setMoviess(responseData);
+  }
+  catch(err){
+    setErrors(true);
+    setSomeErrors("ERROR: "+hasError+ " my error "+err);
+    console.log(someError);
+  }
   //setFishList(fishList=>[...fishList, responseData]);
 }
+
+
 return (
     <NavigationContainer>
       <Stack.Navigator>
