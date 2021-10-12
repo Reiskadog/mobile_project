@@ -21,12 +21,12 @@ const App = () =>{
   const [movies, setMovies] = useState([]);
   const [moviesss, setMoviesss] = useState([]);
 
-  setInterval(refreshComment, 3000);
+  //setInterval(refreshComment, 3000);
   //setInterval(refreshCategory, 1000);
 
-function refreshComment(){
+/*function refreshComment(){
   commentUpdated = true;
-}
+}*/
 /*function refreshCategory(){
   categoryUpdated = true;
 }*/
@@ -57,11 +57,11 @@ function CategoryScreen({ route,navigation }) {
   let { userParam } = route.params;
   var displayUsername = userParam;
 
-  setInterval(refreshUser, 1000);
+  /*setInterval(refreshUser, 1000);
 
   function refreshUser(){
     userAddUpdated = false;
-  }
+  }*/
 
 if(userAddUpdated){
   //const [advice, setAdvice] = useState("");
@@ -144,21 +144,35 @@ function fetchMessageData(p1,p2,p3){
   }, []);
 }
 
+async function fetchMessageData2(p1,p2,p3){
+  const response = await fetch("http://10.0.2.2:8080/rest/categoryservice/addMessage/"+p1+"/"+p2+"/"+p3,
+    {
+      method:'GET',
+      headers:{
+        'Content-Type':'application/json'
+      },
+    });
+
+    const responseData = await response.text();
+    console.log("Isotesti ******* "+responseData);
+}
+
 //Display screen part
 function DisplayComment({ route ,navigation }) {
 // Make function call with category id, which we get from route.param.
 
-  const [newMessage, setMessage]=useState('');
+  const [newMessageState, setMessage]=useState('');
 
   const messageInputHandler=(enteredText)=>{
     setMessage(enteredText);
   }
-
+  var dummyMessage = '';
   let { otherParam, pcategory, pusername} = route.params;
   param = moviess;
 
   if(commentUpdated)
   {
+    commentUpdated = false;
     fetchCommentData(otherParam);
     console.log("Tässä otherParam " + otherParam);
     console.log("Tässä pcategory "+pcategory);
@@ -176,13 +190,14 @@ return (
         <TextInput 
           multiline={true}
           numberOfLines={1}
+          //onChangeText={(text) => setMessage({text}.toString())}
           onChangeText={messageInputHandler}
           placeholder='Your message here'
         />
       </View>
       <View style={globalStyles.postMessage}>
         <Pressable style={globalStyles.postMessageButton} onPress={() => 
-          {fetchMessageData(newMessage,otherParam,pusername)}}>
+          {fetchMessageData2(newMessageState,otherParam,pusername)}}>
         <Text style={globalStyles.buttonText}>Post message</Text>
         </Pressable>
       </View>
@@ -190,6 +205,7 @@ return (
         <FlatList
           keyExtractor={(item) => item.id.toString()}
           data={moviess}
+          style={globalStyles.messageList}
           renderItem={({item}) => (
             <View style={globalStyles.commentItem}>
               <Text style={globalStyles.commentUsername}>{item.username}</Text>

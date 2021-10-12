@@ -105,6 +105,9 @@ export const globalStyles = StyleSheet.create({
         borderRadius: 4,
         elevation: 3,
         backgroundColor: '#6060ff',
+    },
+    messageList: {
+        maxHeight: 350,
     }
     /*inputStyle: {
         borderWidth: 2, 
