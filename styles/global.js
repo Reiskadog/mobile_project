@@ -95,6 +95,7 @@ export const globalStyles = StyleSheet.create({
     postMessage: {
         marginTop: 10,
         alignItems: 'flex-start',
+        marginBottom: 30,
     },
     postMessageButton: {
         alignItems: 'center',

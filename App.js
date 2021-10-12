@@ -71,7 +71,7 @@ if(userAddUpdated){
             try {
                 const response = await fetch(url);
                 const json = await response.json();
-              // console.log(json.slip.advice);
+                console.log("test123");
                 //setAdvice(json.slip.advice);
                 //console.log("repondi " + json);
             } catch (error) {
@@ -102,7 +102,8 @@ if(userAddUpdated){
             renderItem={({item}) => (
               <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DisplayComment', {
                 otherParam: item.id,
-                
+                pcategory: item.category,
+                pusername: displayUsername,
               })}>
             <View style={globalStyles.categoryItem}>
               <Text style={globalStyles.buttonText}>{item.category}</Text>
@@ -125,22 +126,66 @@ if(userAddUpdated){
   );
 }
 
+function fetchMessageData(p1,p2,p3){
+  useEffect(() => {
+    const url = "http://10.0.2.2:8080/rest/categoryservice/addMessage/"+p1+"/"+p2+"/"+p3;
+    const fetchiData = async () => {
+        try {
+            const response = await fetch(url);
+            const json = await response.json();
+          // console.log(json.slip.advice);
+            //setAdvice(json.slip.advice);
+            //console.log("repondi " + json);
+        } catch (error) {
+            console.log("error", error);
+        }
+    };
+    fetchiData();
+  }, []);
+}
+
 //Display screen part
 function DisplayComment({ route ,navigation }) {
 // Make function call with category id, which we get from route.param.
-  let { otherParam } = route.params;
+
+  const [newMessage, setMessage]=useState('');
+
+  const messageInputHandler=(enteredText)=>{
+    setMessage(enteredText);
+  }
+
+  let { otherParam, pcategory, pusername} = route.params;
   param = moviess;
 
   if(commentUpdated)
   {
     fetchCommentData(otherParam);
     console.log("Tässä otherParam " + otherParam);
+    console.log("Tässä pcategory "+pcategory);
+    console.log("Tässä pusername "+pusername);
     console.log("Tässä settiä "+param);
   }
   
 return (
 <View style={{ flex: 1}}>
     <View style={{flex: 8, padding:10}}>
+      <View style={{justifyContent:'center', alignItems:'center'}}>
+        <Text style={globalStyles.titleText}>{pcategory}</Text>
+      </View>
+      <View style={globalStyles.newMessage}>
+        <TextInput 
+          multiline={true}
+          numberOfLines={1}
+          onChangeText={messageInputHandler}
+          placeholder='Your message here'
+        />
+      </View>
+      <View style={globalStyles.postMessage}>
+        <Pressable style={globalStyles.postMessageButton} onPress={() => 
+          {fetchMessageData(newMessage,otherParam,pusername)}}>
+        <Text style={globalStyles.buttonText}>Post message</Text>
+        </Pressable>
+      </View>
       <View>
         <FlatList
           keyExtractor={(item) => item.id.toString()}
@@ -153,26 +198,10 @@ return (
           )}
         />
       </View>
-      <View style={globalStyles.newMessage}>
-        <TextInput 
-          multiline={true}
-          numberOfLines={1}
-          placeholder='Your message here'
-        />
-      </View>
-      <View style={globalStyles.postMessage}>
-        <Pressable style={globalStyles.postMessageButton} onPress={() => {
-            navigation.navigate('CategoryScreen', {
-            otherParam: 'anything you want here',
-          });
-        }}>
-        <Text style={globalStyles.buttonText}>Post message</Text>
-        </Pressable>
-      </View>
     </View>
       <View style={{flex:1, alignItems:"center", justifyContent:"center"}}> 
         <Pressable style={globalStyles.button} onPress={() => {
-          navigation.navigate('AddSomething', {
+          navigation.navigate('CategoryScreen', {
             otherParam: 'anything you want here',
           });
         }}>
