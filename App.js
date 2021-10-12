@@ -133,7 +133,7 @@ return (
     </View>
       <View style={{flex:1, alignItems:"center", justifyContent:"center"}}> 
         <Pressable style={globalStyles.button} onPress={() => {
-          navigation.navigate('CategoryScreen', {
+          navigation.navigate('AddSomething', {
             otherParam: 'anything you want here',
           });
         }}>
@@ -238,13 +238,15 @@ return(
 
 //Adddata part to be convert to more functional form
 async function addData(fisu) {
-  const response = await fetch("http://10.0.2.2:8080/rest/fishservice/addjsonfish",
+  let user = "http://10.0.2.2:8080/rest/fishservice/addjsonfish/" + fisu;
+
+  const response = await fetch(user,
   {
     method:'POST',
     headers:{
       'Content-Type':'application/json'
     },
-    body:JSON.stringify({breed:fisu, weight:1003})
+    body:JSON.stringify({username:fisu})
   });
   const responseData = await response.json();
   console.log(responseData);
