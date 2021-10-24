@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button, View, Text,StyleSheet,FlatList,TextInput,Alert,TouchableOpacity, Pressable } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, Text,FlatList,TouchableOpacity, Pressable } from 'react-native';
 import { globalStyles } from '../styles/global';
-
-import {fetchData} from "../App";
-
 
 let userAddUpdated = true;
 let categoryUpdated = true;
@@ -17,18 +12,10 @@ export default function CategoryScreen({ route,navigation }) {
     var displayUsername = userParam;
     const [movies, setMovies] = useState([]);
 
-    /*setInterval(refreshUser, 1000);
-  
-    function refreshUser(){
-      userAddUpdated = false;
-    }*/
-  
-  
-    //const [advice, setAdvice] = useState("");
       useEffect(() => {
         if(userAddUpdated){
         userAddUpdated = false;
-          const url = "https://forumapp-328823.ew.r.appspot.com/rest/categoryservice/addjsonfish/"+userParam;
+          const url = "http://10.0.2.2:8080/rest/categoryservice/addjsonfish/"+userParam;
           const fetchiData = async () => {
               try {
                   const response = await fetch(url);
@@ -42,11 +29,9 @@ export default function CategoryScreen({ route,navigation }) {
         }
       }, []);
 
-    
-        //categoryUpdated = false;
-        useEffect(() => {
+            useEffect(() => {
             if(categoryUpdated){
-            const url = "https://forumapp-328823.ew.r.appspot.com/rest/categoryservice/getAll";
+            const url = "http://10.0.2.2:8080/rest/categoryservice/getAll";
             const fetchiData = async () => {
                 try {
                     const response = await fetch(url);
@@ -62,34 +47,6 @@ export default function CategoryScreen({ route,navigation }) {
             fetchiData();
         }
         }, []);
-
-    /*
-    async function fetchData() {
-        const [hasError, setErrors] = useState(false);
-        const [someError, setSomeErrors] = useState('');
-        //Variable res is used later, so it must be introduced before try block and so cannot be const.
-        let res = null;
-        try{
-          //This will wait the fetch to be done - it is also timeout which might be a response (server timeouts)
-          res=await fetch("http://10.0.2.2:8080/rest/categoryservice/getAll");
-        }
-        catch(error){
-          setErrors(true);
-        }
-        try{
-          //Getting json from the response
-          const responseData = await res.json();
-          console.log(responseData);//Just for checking.....
-          setMovies(responseData);
-        }
-        catch(err){
-          setErrors(true);
-          setSomeErrors("ERROR: "+hasError+ " my error "+err);
-          console.log(someError);
-        }
-        categoryUpdated = false;
-        dataPosting = movies;
-      }*/
 
     return (
       <View style={{ flex: 1}}>

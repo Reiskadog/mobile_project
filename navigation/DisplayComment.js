@@ -1,91 +1,45 @@
-import React, { useState, useEffect } from "react";
-import { Button, View, Text,StyleSheet,FlatList,TextInput,Alert,TouchableOpacity, Pressable } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useState } from "react";
+import {  View, Text,FlatList,TextInput, Pressable } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { globalStyles } from '../styles/global';
-
-import {fetchCommentData, fetchMessageData2} from "../App";
-let commentUpdated = true;
-let commentPosted = false;
-
-let commentPosting = "";
 
 //Display screen part
 export default function DisplayComment({ route ,navigation }) {
-    // Make function call with category id, which we get from route.param.
     const [moviess, setMoviess] = useState([]);
 
       const [newMessageState, setMessage]=useState('');
       const messageInputHandler=(enteredText)=>{
         setMessage(enteredText);
       }
-      var dummyMessage = '';
       let { otherParam, pcategory, pusername} = route.params;
       param = moviess;
-
-      useEffect(() => {
-        if(commentUpdated){
-          const url = "https://forumapp-328823.ew.r.appspot.com/rest/categoryservice/getAllComments/"+otherParam;
-          const fetchiData = async () => {
-              try {
-                  const response = await fetch(url);
-                  const json = await response.json();
-                  setMoviess(json);
-                  console.log("test123");
-              } catch (error) {
-                  console.log("error", error);
+      
+      useFocusEffect(
+        React.useCallback(() => {
+          let isActive = true;
+          const fetchComment = async () => {
+            const url = "http://10.0.2.2:8080/rest/categoryservice/getAllComments/"+otherParam;
+            try {
+              const response = await fetch(url);
+              const json = await response.json();
+              console.log("test123");
+              if (isActive) {
+                setMoviess(json);
               }
-              commentUpdated = false;
-              commentPosting = moviess;
+            } catch (e) {
+              // Handle error
+              console.log("error", error);
+            }
           };
-          fetchiData();
-        }
-      }, []);
-
-/*
-      if(commentUpdated)
-      {
-        commentUpdated = false;
-        
-        fetchCommentData(otherParam);
-        console.log("Tässä otherParam " + otherParam);
-        console.log("Tässä pcategory "+pcategory);
-        console.log("Tässä pusername "+pusername);
-        console.log("Tässä settiä "+param);
-      }
-*/
-      //Fetch data for category
-async function fetchCommentData(id) {
-    const [hasError, setErrors] = useState(false);
-    const [someError, setSomeErrors] = useState('');
-  
-    //Variable res is used later, so it must be introduced before try block and so cannot be const.
-    let res = null;
-    let db_id = "https://forumapp-328823.ew.r.appspot.com/rest/categoryservice/getAllComments/" + id;
-    try{
-      //This will wait the fetch to be done - it is also timeout which might be a response (server timeouts)
-      res=await fetch(db_id);
-    }
-    catch(error){
-      setErrors(true);
-    }
-    try{
-      //Getting json from the response
-      const responseData = await res.json();
-      console.log(responseData);//Just for checking.....
-      setMoviess(responseData);
-    }
-    catch(err){
-      setErrors(true);
-      setSomeErrors("ERROR: "+hasError+ " my error "+err);
-      console.log(someError);
-    }
-  commentUpdated = false;
-  commentPosting = moviess;
-  }
+          fetchComment();
+          return () => {
+            isActive = false;
+          };
+        }, [])
+      );
 
 async function fetchMessageData2(p1,p2,p3){
-    const response = await fetch("https://forumapp-328823.ew.r.appspot.com/rest/categoryservice/addMessage/"+p1+"/"+p2+"/"+p3,
+    const response = await fetch("http://10.0.2.2:8080/rest/categoryservice/addMessage/"+p1+"/"+p2+"/"+p3,
       {
         method:'GET',
         headers:{
@@ -108,7 +62,6 @@ async function fetchMessageData2(p1,p2,p3){
             <TextInput 
               multiline={true}
               numberOfLines={1}
-              //onChangeText={(text) => setMessage({text}.toString())}
               onChangeText={messageInputHandler}
               placeholder='Your message here'
             />

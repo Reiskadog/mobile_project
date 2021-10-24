@@ -1,8 +1,6 @@
 
-import React, { useState, useEffect } from "react";
-import { Button, View, Text,StyleSheet,FlatList,TextInput,Alert,TouchableOpacity, Pressable } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useState } from "react";
+import {  View, Text,TextInput, Pressable } from 'react-native';
 import { globalStyles } from '../styles/global';
 
 //User screen part
